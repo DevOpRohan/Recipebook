@@ -1,0 +1,34 @@
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% recipes.forEach((recipe) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div style="height: 200px; overflow: hidden;">
+            <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= recipe.name %></h5>
+            <p class="card-text"><%= recipe.description %></p>
+            <% if (user) { %>
+              <a href="/favorites/toggle/<%= recipe._id %>" class="btn btn-outline-danger">
+                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+              </a>
+            <% } else { %>
+              <span class="btn btn-outline-danger disabled">
+                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+              </span>
+            <% } %>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+              Read More
+            </button>
+          </div>
+        </div>
+      </div>
+      <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

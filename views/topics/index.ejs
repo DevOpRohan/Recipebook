@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h1 class="mb-4">Topics</h1>
+  <div class="row">
+    <% topics.forEach(topic => { %>
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title"><%= topic.name %></h5>
+            <a href="/topics/<%= topic._id %>" class="btn btn-primary">View Topic</a>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
