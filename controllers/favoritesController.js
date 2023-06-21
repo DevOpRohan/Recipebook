@@ -43,3 +43,15 @@ exports.toggleFavorite = async (req, res) => {
     res.redirect('/');
   }
 };
+
+
+exports.getFavorites = async (req, res) => {
+  try {
+    const favorites = await Favorite.find({ user: req.user.id }).populate('recipe');
+    res.render('favorites/index', { favorites });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading favorites');
+    res.redirect('/');
+  }
+};

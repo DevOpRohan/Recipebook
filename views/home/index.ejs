@@ -1,34 +1,58 @@
-<%- include('../partials/header') %>
+ <%- include('../partials/header') %>
 
-<main class="container mt-5">
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    <% recipes.forEach((recipe) => { %>
-      <div class="col">
-        <div class="card h-100">
-          <div style="height: 200px; overflow: hidden;">
-            <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
-          </div>
-          <div class="card-body">
-            <h5 class="card-title"><%= recipe.name %></h5>
-            <p class="card-text"><%= recipe.description %></p>
-            <% if (user) { %>
-              <a href="/favorites/toggle/<%= recipe._id %>" class="btn btn-outline-danger">
-                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
-              </a>
-            <% } else { %>
-              <span class="btn btn-outline-danger disabled">
-                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
-              </span>
-            <% } %>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
-              Read More
-            </button>
-          </div>
-        </div>
-      </div>
-      <%- include('../recipes/recipeModal', { recipe: recipe }) %>
-    <% }) %>
-  </div>
-</main>
-
-<%- include('../partials/footer') %>
+ <main class="container mt-5">
+   <div class="row row-cols-1 row-cols-md-3 g-4">
+     <% recipes.forEach((recipe) => { %>
+       <div class="col">
+         <div class="card h-100">
+           <div style="height: 200px; overflow: hidden;">
+             <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+           </div>
+           <div class="card-body">
+             <h5 class="card-title"><%= recipe.name %></h5>
+             <p class="card-text">By <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a></p>
+             <% if (user) { %>
+               <a href="/favorites/toggle/<%= recipe._id %>" class="btn btn-outline-danger">
+                 <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+               </a>
+             <% } else { %>
+               <span class="btn btn-outline-danger disabled">
+                 <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+               </span>
+             <% } %>
+             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+               Read More
+             </button>
+           </div>
+         </div>
+       </div>
+       <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+     <% }) %>
+   </div>
+ 
+   <a href="/topics" class="btn btn-primary mt-3">View Topics</a>
+ </main>
+ 
+ <nav aria-label="Page navigation">
+   <ul class="pagination justify-content-center">
+     <li class="page-item <% if (page === 1) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=1" tabindex="-1">First</a>
+     </li>
+     <li class="page-item <% if (page === 1) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=<%= page - 1 %>" tabindex="-1">Previous</a>
+     </li>
+     <% for (let i = 1; i <= totalPages; i++) { %>
+       <li class="page-item <% if (page === i) { %>active<% } %>">
+         <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+       </li>
+     <% } %>
+     <li class="page-item <% if (page === totalPages) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=<%= page + 1 %>">Next</a>
+     </li>
+     <li class="page-item <% if (page === totalPages) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=<%= totalPages %>">Last</a>
+     </li>
+   </ul>
+ </nav>
+ 
+ <%- include('../partials/footer') %>

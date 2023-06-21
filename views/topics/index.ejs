@@ -1,14 +1,39 @@
 <%- include('../partials/header') %>
 
 <main class="container mt-5">
-  <h1 class="mb-4">Topics</h1>
-  <div class="row">
-    <% topics.forEach(topic => { %>
-      <div class="col-md-4">
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="card-title"><%= topic.name %></h5>
-            <a href="/topics/<%= topic._id %>" class="btn btn-primary">View Topic</a>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% topics.forEach((topic) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title"><%= topic %></h5>
+          </div>
+          <div id="carousel<%= topic %>" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <% recipesByTopic[topic].forEach((recipe, index) => { %>
+                <div class="carousel-item <% if (index === 0) { %>active<% } %>">
+                  <div class="card-body">
+                    <div style="height: 200px; overflow: hidden;">
+                      <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title"><%= recipe.name %></h5>
+                    <p class="card-text">By <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a></p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+                      Read More
+                    </button>
+                  </div>
+                  <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+                </div>
+              <% }) %>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= topic %>" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= topic %>" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
           </div>
         </div>
       </div>

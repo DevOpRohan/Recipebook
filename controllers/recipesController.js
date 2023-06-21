@@ -71,3 +71,14 @@ exports.deleteRecipe = async (req, res) => {
     res.redirect('/recipes');
   }
 };
+
+exports.getUserRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find({ user: req.user._id }).populate('user'); // Filter recipes based on the logged-in user
+    res.render('recipes/index', { recipes });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading recipes');
+    res.redirect('/');
+  }
+};

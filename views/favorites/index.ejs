@@ -1,19 +1,27 @@
 <%- include('../partials/header') %>
 
 <main class="container mt-5">
-  <h1 class="mb-4">My Favorites</h1>
-  <div class="row">
-    <% favorites.forEach(favorite => { %>
-      <div class="col-md-4">
-        <div class="card mb-4">
-          <img src="<%= favorite.recipe.image %>" class="card-img-top" alt="<%= favorite.recipe.name %>" />
+  <h2>Your Favorites</h2>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% favorites.forEach((favorite) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div style="height: 200px; overflow: hidden;">
+            <img src="<%= favorite.recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= favorite.recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+          </div>
           <div class="card-body">
             <h5 class="card-title"><%= favorite.recipe.name %></h5>
             <p class="card-text"><%= favorite.recipe.description %></p>
-            <a href="/recipes/<%= favorite.recipe._id %>" class="btn btn-primary">View Recipe</a>
+            <a href="/favorites/toggle/<%= favorite.recipe._id %>" class="btn btn-outline-danger">
+              <i class="bi bi-heart-fill"></i> Remove from Favorites
+            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= favorite.recipe._id %>">
+              Read More
+            </button>
           </div>
         </div>
       </div>
+      <%- include('../recipes/recipeModal', { recipe: favorite.recipe }) %>
     <% }) %>
   </div>
 </main>

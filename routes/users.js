@@ -4,6 +4,7 @@ const passport = require('passport');
 const signUpController = require('../controllers/signUpController');
 const loginController = require('../controllers/loginController');
 const profileController = require('../controllers/profileController');
+
 const { ensureAuthenticated } = require('../middlewares/auth');
 const { check } = require('express-validator');
 const router = express.Router();
@@ -29,12 +30,19 @@ router.post(
   loginController.postLogin
 );
 
+
 router.get('/profile', ensureAuthenticated, profileController.getProfile);
 router.post('/profile', ensureAuthenticated, profileController.updateProfile);
+
+
 router.get('/logout', (req, res) => {
-  req.logout();
-  req.flash('success_msg', 'You are logged out');
-  res.redirect('/users/login');
+  req.logout(() => {
+    req.flash('success_msg', 'You are logged out');
+    res.redirect('/users/login');
+  });
 });
+
+// router.get('/:userId/profile', ensureAuthenticated, profileController.getUserProfile);
+router.get('/profile/:userId',  profileController.getUserProfile);
 
 module.exports = router;

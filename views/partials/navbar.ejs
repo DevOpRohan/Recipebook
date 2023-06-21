@@ -9,20 +9,21 @@
         <li class="nav-item">
           <a class="nav-link" href="/">Home</a>
         </li>
-
         <li class="nav-item">
           <a class="nav-link" href="/topics">Topics</a>
         </li>
         <% if (user) { %>
           <li class="nav-item">
-            <a class="nav-link" href="/recipes">My Recipes</a>
+            <a class="nav-link" href="/recipes/my">My Recipes</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/favorites">Favorites</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/recipes/new">Create</a>
-          </li>
+          <% if (!profileUser || (profileUser && profileUser._id.toString() === user._id.toString())) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/recipes/new">Create</a>
+            </li>
+          <% } %>
           <li class="nav-item">
             <a class="nav-link" href="/users/profile">Profile</a>
           </li>
@@ -37,6 +38,12 @@
             <a class="nav-link" href="/users/signup">Sign Up</a>
           </li>
         <% } %>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/help">Help</a>
+        </li>
       </ul>
     </div>
   </div>

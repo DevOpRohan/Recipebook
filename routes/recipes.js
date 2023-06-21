@@ -22,10 +22,11 @@ const router = express.Router();
 router.get('/new', ensureAuthenticated, createController.getNewRecipe);
 router.post('/new', ensureAuthenticated, createController.createRecipe);
 
+router.get('/my', ensureAuthenticated, recipesController.getUserRecipes);
+
 router.get('/', recipesController.getAllRecipes);
 router.get('/:id', recipesController.getRecipe);
 router.get('/:id/edit', ensureAuthenticated, recipesController.editRecipe);
 router.put('/:id', ensureAuthenticated, recipesController.updateRecipe);
-router.delete('/:id', ensureAuthenticated, recipesController.deleteRecipe); // Update this line
-
+router.delete('/:id', ensureAuthenticated, recipesController.deleteRecipe);
 module.exports = router;
