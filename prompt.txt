@@ -1,0 +1,1368 @@
+//models/favorite.js
+```
+const mongoose = require('mongoose');
+
+const FavoriteSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  recipe: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Recipe',
+  },
+});
+
+module.exports = mongoose.model('Favorite', FavoriteSchema);
+```
+
+//models/recipe.js
+```
+const mongoose = require('mongoose');
+
+const RecipeSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
+  ingredients: {
+    type: String,
+    required: true,
+  },
+  instructions: {
+    type: String,
+    required: true,
+  },
+  topic: {
+    type: String,
+  },
+  category: {
+    type: String,
+  },
+  difficulty: {
+    type: String,
+  },
+  time: {
+    type: String,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  favorites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Favorite',
+    },
+  ],
+});
+
+module.exports = mongoose.model('Recipe', RecipeSchema);
+```
+
+//models/topic.js
+```
+const mongoose = require('mongoose');
+
+const TopicSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+});
+
+module.exports = mongoose.model('Topic', TopicSchema);
+```
+
+//models/user.js
+```
+const mongoose = require('mongoose');
+
+const UserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  avatar: {
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
+  favorites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Favorite',
+    },
+  ],
+});
+
+module.exports = mongoose.model('User', UserSchema);
+```
+
+//routes/favorites.js
+```
+// const express = require('express');
+// const { ensureAuthenticated } = require('../middlewares/auth');
+// const favoritesController = require('../controllers/favoritesController');
+// const router = express.Router();
+
+// router.get('/toggle/:recipeId', ensureAuthenticated, favoritesController.toggleFavorite);
+
+// module.exports = router;
+
+const express = require('express');
+const { ensureAuthenticated } = require('../middlewares/auth');
+const favoritesController = require('../controllers/favoritesController');
+const router = express.Router();
+
+router.get('/', ensureAuthenticated, favoritesController.getFavorites);
+router.get('/toggle/:recipeId', ensureAuthenticated, favoritesController.toggleFavorite);
+
+module.exports = router;
+```
+
+//routes/index.js
+```
+const express = require('express');
+const homeController = require('../controllers/homeController');
+const aboutController = require('../controllers/aboutController');
+const helpController = require('../controllers/helpController');
+const router = express.Router();
+
+router.get('/', homeController.getHomePage);
+router.get('/about', aboutController.getAbout);
+router.get('/help', helpController.getHelp);
+
+module.exports = router;
+```
+
+//routes/recipes.js
+```
+// const express = require('express');
+// const recipesController = require('../controllers/recipesController');
+// const createController = require('../controllers/createController');
+// const { ensureAuthenticated } = require('../middlewares/auth');
+// const router = express.Router();
+
+// router.get('/', recipesController.getAllRecipes);
+// router.get('/:id', recipesController.getRecipeById);
+// router.get('/create', ensureAuthenticated, createController.getNewRecipeForm);
+// router.post('/create', ensureAuthenticated, createController.createRecipe);
+
+// module.exports = router;
+
+
+
+const express = require('express');
+const { ensureAuthenticated } = require('../middlewares/auth');
+const createController = require('../controllers/createController');
+const recipesController = require('../controllers/recipesController');
+const router = express.Router();
+
+router.get('/new', ensureAuthenticated, createController.getNewRecipe);
+router.post('/new', ensureAuthenticated, createController.createRecipe);
+
+router.get('/my', ensureAuthenticated, recipesController.getUserRecipes);
+
+router.get('/', recipesController.getAllRecipes);
+router.get('/:id', recipesController.getRecipe);
+router.get('/:id/edit', ensureAuthenticated, recipesController.editRecipe);
+router.put('/:id', ensureAuthenticated, recipesController.updateRecipe);
+router.delete('/:id', ensureAuthenticated, recipesController.deleteRecipe);
+module.exports = router;
+```
+
+//routes/topics.js
+```
+// const express = require('express');
+// const topicsController = require('../controllers/topicsController');
+// const router = express.Router();
+
+// router.get('/', topicsController.getAllTopics);
+
+// module.exports = router;
+
+const express = require('express');
+const topicsController = require('../controllers/topicsController');
+const router = express.Router();
+
+router.get('/', topicsController.getAllTopics);
+
+module.exports = router;
+```
+
+//routes/users.js
+```
+const { validationResult } = require('express-validator');
+const express = require('express');
+const passport = require('passport');
+const signUpController = require('../controllers/signUpController');
+const loginController = require('../controllers/loginController');
+const profileController = require('../controllers/profileController');
+
+const { ensureAuthenticated } = require('../middlewares/auth');
+const { check } = require('express-validator');
+const router = express.Router();
+
+router.get('/signup', signUpController.getSignUp);
+router.post(
+  '/signup',
+  [
+    check('name', 'Name is required').notEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
+  ],
+  signUpController.createUser
+);
+
+router.get('/login', loginController.getLogin);
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').notEmpty(),
+  ],
+  loginController.postLogin
+);
+
+router.get('/profile', ensureAuthenticated, profileController.getProfile);
+router.post('/profile', ensureAuthenticated, profileController.updateProfile);
+
+router.get('/logout', (req, res) => {
+  req.logout(() => {
+    req.flash('success_msg', 'You are logged out');
+    res.redirect('/users/login');
+  });
+});
+
+// router.get('/:userId/profile', ensureAuthenticated, profileController.getUserProfile);
+router.get('/profile/:userId',  profileController.getUserProfile);
+
+module.exports = router;
+```
+
+//controllers/aboutController.js
+```
+exports.getAbout = (req, res) => {
+    res.render('about/index');
+  };
+```
+
+//controllers/createController.js
+```
+const Recipe = require('../models/recipe');
+
+exports.getNewRecipe = (req, res) => {
+  res.render('create/new');
+};
+
+exports.createRecipe = async (req, res) => {
+  try {
+    const newRecipe = new Recipe({
+      user: req.user.id,
+      name: req.body.name,
+      description: req.body.description,
+      image: req.body.image,
+      ingredients: req.body.ingredients,
+      instructions: req.body.instructions,
+      topic: req.body.topic,
+      category: req.body.category,
+      difficulty: req.body.difficulty,
+      time: req.body.time,
+    });
+
+    await newRecipe.save();
+    req.flash('success_msg', 'Recipe created successfully');
+    res.redirect('/recipes');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error creating recipe');
+    res.redirect('/create/new');
+  }
+};
+```
+
+//controllers/favoritesController.js
+```
+// const Recipe = require('../models/recipe');
+// const Favorite = require('../models/favorite');
+
+// exports.toggleFavorite = async (req, res) => {
+//   try {
+//     const recipe = await Recipe.findById(req.params.recipeId);
+//     const favorite = await Favorite.findOne({ user: req.user.id, recipe: recipe.id });
+
+//     if (favorite) {
+//       await Favorite.deleteOne({ _id: favorite._id });
+//     } else {
+//       const newFavorite = new Favorite({ user: req.user.id, recipe: recipe.id });
+//       await newFavorite.save();
+//     }
+
+//     res.redirect('/');
+//   } catch (err) {
+//     console.error(err);
+//     req.flash('error_msg', 'Error toggling favorite');
+//     res.redirect('/');
+//   }
+// };
+
+const Recipe = require('../models/recipe');
+const Favorite = require('../models/favorite');
+
+exports.toggleFavorite = async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.recipeId);
+    const favorite = await Favorite.findOne({ user: req.user.id, recipe: recipe.id });
+
+    if (favorite) {
+      await Favorite.deleteOne({ _id: favorite._id });
+    } else {
+      const newFavorite = new Favorite({ user: req.user.id, recipe: recipe.id });
+      await newFavorite.save();
+    }
+
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error toggling favorite');
+    res.redirect('/');
+  }
+};
+
+
+exports.getFavorites = async (req, res) => {
+  try {
+    const favorites = await Favorite.find({ user: req.user.id }).populate('recipe');
+    res.render('favorites/index', { favorites });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading favorites');
+    res.redirect('/');
+  }
+};
+```
+
+//controllers/helpController.js
+```
+exports.getHelp = (req, res) => {
+    res.render('help/index');
+  };
+```
+
+//controllers/homeController.js
+```
+const Recipe = require('../models/recipe');
+
+exports.getHomePage = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const recipes = await Recipe.find({})
+      .sort({ date: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('user');
+
+    const totalRecipes = await Recipe.countDocuments();
+    const totalPages = Math.ceil(totalRecipes / limit);
+
+    res.render('home/index', { recipes, page, totalPages });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading home page');
+    res.redirect('/');
+  }
+};
+```
+
+//controllers/loginController.js
+```
+const passport = require('passport');
+const { validationResult } = require('express-validator');
+
+exports.getLogin = (req, res) => {
+  res.render('login/index');
+};
+
+exports.postLogin = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    req.flash('errors', errors.array());
+    return res.redirect('/users/login');
+  }
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/users/login',
+    failureFlash: true,
+  })(req, res, next);
+};
+```
+
+//controllers/profileController.js
+```
+const User = require('../models/user');
+const Recipe = require('../models/recipe');
+
+exports.getProfile = (req, res) => {
+  res.render('profile/index', { user: req.user });
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, req.body);
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+};
+exports.getUserProfile = async (req, res) => {
+  try {
+    const profileUser = await User.findById(req.params.userId);
+    const recipes = await Recipe.find({ user: profileUser.id }).populate('user');
+    res.locals.profileUser = profileUser; // Add this line
+    res.render('users/profile', { profileUser, recipes });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading user profile');
+    res.redirect('/');
+  }
+};
+```
+
+//controllers/recipesController.js
+```
+const Recipe = require('../models/recipe');
+
+exports.getAllRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find({}).populate('user');
+    res.render('recipes/index', { recipes });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading recipes');
+    res.redirect('/');
+  }
+};
+
+exports.getRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id).populate('user');
+    res.render('recipes/show', { recipe });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading recipe');
+    res.redirect('/recipes');
+  }
+};
+
+exports.editRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id);
+    if (recipe.user.toString() !== req.user.id) {
+      req.flash('error_msg', 'Not authorized');
+      return res.redirect('/recipes');
+    }
+    res.render('recipes/edit', { recipe });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading recipe');
+    res.redirect('/recipes');
+  }
+};
+
+exports.updateRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id);
+    if (recipe.user.toString() !== req.user.id) {
+      req.flash('error_msg', 'Not authorized');
+      return res.redirect('/recipes');
+    }
+    Object.assign(recipe, req.body);
+    await recipe.save();
+    req.flash('success_msg', 'Recipe updated successfully');
+    res.redirect('/recipes');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error updating recipe');
+    res.redirect('/recipes');
+  }
+};
+
+exports.deleteRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id);
+    if (recipe.user.toString() !== req.user.id) {
+      req.flash('error_msg', 'Not authorized');
+      return res.redirect('/recipes');
+    }
+    await Recipe.deleteOne({ _id: req.params.id }); // Update this line
+    req.flash('success_msg', 'Recipe deleted successfully');
+    res.redirect('/recipes');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error deleting recipe');
+    res.redirect('/recipes');
+  }
+};
+
+exports.getUserRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find({ user: req.user._id }).populate('user'); // Filter recipes based on the logged-in user
+    res.render('recipes/index', { recipes });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading recipes');
+    res.redirect('/');
+  }
+};
+```
+
+//controllers/signUpController.js
+```
+const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+const { validationResult } = require('express-validator');
+
+exports.getSignUp = (req, res) => {
+  res.render('signUp/index');
+};
+
+exports.createUser = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).render('signUp/index', { errors: errors.array() });
+  }
+
+  try {
+    const { name, email, password } = req.body;
+    const user = new User({ name, email, password });
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
+    await user.save();
+    req.flash('success_msg', 'You are now registered and can log in');
+    res.redirect('/users/login');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+};
+```
+
+//controllers/topicsController.js
+```
+const Recipe = require('../models/recipe');
+
+exports.getAllTopics = async (req, res) => {
+  try {
+    const topicsAggregation = await Recipe.aggregate([
+      {
+        $group: {
+          _id: { $toLower: '$topic' },
+          recipes: { $push: '$$ROOT' },
+        },
+      },
+    ]);
+
+    const topics = topicsAggregation.map((topic) => topic._id);
+    const recipesByTopic = {};
+
+    for (const topicAggregation of topicsAggregation) {
+      const topic = topicAggregation._id;
+      const recipes = await Promise.all(
+        topicAggregation.recipes.map(async (recipe) => {
+          const populatedRecipe = await Recipe.populate(recipe, 'user');
+          return populatedRecipe;
+        })
+      );
+      recipesByTopic[topic] = recipes;
+    }
+
+    res.render('topics/index', { topics, recipesByTopic });
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Error loading topics');
+    res.redirect('/');
+  }
+};
+```
+
+//== views/about/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h1 class="mb-4">About RecipeBook</h1>
+  <p>RecipeBook is a social networking website where users can create and share their recipes with other users who love cooking. It provides a platform for food enthusiasts to discover new recipes, connect with other users, and explore various culinary topics.</p>
+  <p>For any inquiries or feedback, please contact us at support@recipebook.com.</p>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/create/new.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Create New Recipe</h3>
+        </div>
+        <div class="card-body">
+          <form action="/recipes/new" method="post">
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" name="name" required />
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="image" class="form-label">Image URL</label>
+              <input type="text" class="form-control" id="image" name="image" />
+            </div>
+            <div class="mb-3">
+              <label for="ingredients" class="form-label">Ingredients</label>
+              <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="instructions" class="form-label">Instructions</label>
+              <textarea class="form-control" id="instructions" name="instructions" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="topic" class="form-label">Topic</label>
+              <input type="text" class="form-control" id="topic" name="topic" />
+            </div>
+            <div class="mb-3">
+              <label for="category" class="form-label">Category</label>
+              <input type="text" class="form-control" id="category" name="category" />
+            </div>
+            <div class="mb-3">
+              <label for="difficulty" class="form-label">Difficulty</label>
+              <input type="text" class="form-control" id="difficulty" name="difficulty" />
+            </div>
+            <div class="mb-3">
+              <label for="time" class="form-label">Time</label>
+              <input type="text" class="form-control" id="time" name="time" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create Recipe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/favorites/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h2>Your Favorites</h2>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% favorites.forEach((favorite) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div style="height: 200px; overflow: hidden;">
+            <img src="<%= favorite.recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= favorite.recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= favorite.recipe.name %></h5>
+            <p class="card-text"><%= favorite.recipe.description %></p>
+            <a href="/favorites/toggle/<%= favorite.recipe._id %>" class="btn btn-outline-danger">
+              <i class="bi bi-heart-fill"></i> Remove from Favorites
+            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= favorite.recipe._id %>">
+              Read More
+            </button>
+          </div>
+        </div>
+      </div>
+      <%- include('../recipes/recipeModal', { recipe: favorite.recipe }) %>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/help/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h1 class="mb-4">Help</h1>
+  <h3>Frequently Asked Questions</h3>
+  <h5>Q: How can I create a new recipe?</h5>
+  <p>A: To create a new recipe, go to the "Create" tab and fill in the required information such as name, description, ingredients, and instructions. You can also add an image and specify the topic, category, difficulty, and time.</p>
+  <h5>Q: How can I add a recipe to my favorites?</h5>
+  <p>A: When viewing a recipe, click on the "Add to Favorites" button to add it to your favorites list. You can access your favorites from the "Favorites" tab.</p>
+  <h5>Q: How can I edit my profile information?</h5>
+  <p>A: Go to the "Profile" tab and click on the "Edit Profile" button. You can update your name, email, avatar, and bio.</p>
+  <h5>Q: How can I delete my account?</h5>
+  <p>A: To delete your account, please contact our support team at support@recipebook.com.</p>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/home/index.ejs
+```
+<!-- <%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% recipes.forEach((recipe) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div style="height: 200px; overflow: hidden;">
+            <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= recipe.name %></h5>
+            <p class="card-text">By <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a></p>
+            <% if (user) { %>
+              <a href="/favorites/toggle/<%= recipe._id %>" class="btn btn-outline-danger">
+                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+              </a>
+            <% } else { %>
+              <span class="btn btn-outline-danger disabled">
+                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+              </span>
+            <% } %>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+              Read More
+            </button>
+          </div>
+        </div>
+      </div>
+      <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+    <% }) %>
+  </div>
+</main>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    <li class="page-item <% if (page === 1) { %>disabled<% } %>">
+      <a class="page-link" href="/?page=1" tabindex="-1">First</a>
+    </li>
+    <li class="page-item <% if (page === 1) { %>disabled<% } %>">
+      <a class="page-link" href="/?page=<%= page - 1 %>" tabindex="-1">Previous</a>
+    </li>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <% if (page === i) { %>active<% } %>">
+        <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+      </li>
+    <% } %>
+    <li class="page-item <% if (page === totalPages) { %>disabled<% } %>">
+      <a class="page-link" href="/?page=<%= page + 1 %>">Next</a>
+    </li>
+    <li class="page-item <% if (page === totalPages) { %>disabled<% } %>">
+      <a class="page-link" href="/?page=<%= totalPages %>">Last</a>
+    </li>
+  </ul>
+</nav>
+
+<%- include('../partials/footer') %>
+ -->
+ <%- include('../partials/header') %>
+
+ <main class="container mt-5">
+   <div class="row row-cols-1 row-cols-md-3 g-4">
+     <% recipes.forEach((recipe) => { %>
+       <div class="col">
+         <div class="card h-100">
+           <div style="height: 200px; overflow: hidden;">
+             <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+           </div>
+           <div class="card-body">
+             <h5 class="card-title"><%= recipe.name %></h5>
+             <p class="card-text">By <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a></p>
+             <% if (user) { %>
+               <a href="/favorites/toggle/<%= recipe._id %>" class="btn btn-outline-danger">
+                 <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+               </a>
+             <% } else { %>
+               <span class="btn btn-outline-danger disabled">
+                 <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+               </span>
+             <% } %>
+             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+               Read More
+             </button>
+           </div>
+         </div>
+       </div>
+       <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+     <% }) %>
+   </div>
+ 
+   <a href="/topics" class="btn btn-primary mt-3">View Topics</a>
+ </main>
+ 
+ <nav aria-label="Page navigation">
+   <ul class="pagination justify-content-center">
+     <li class="page-item <% if (page === 1) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=1" tabindex="-1">First</a>
+     </li>
+     <li class="page-item <% if (page === 1) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=<%= page - 1 %>" tabindex="-1">Previous</a>
+     </li>
+     <% for (let i = 1; i <= totalPages; i++) { %>
+       <li class="page-item <% if (page === i) { %>active<% } %>">
+         <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+       </li>
+     <% } %>
+     <li class="page-item <% if (page === totalPages) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=<%= page + 1 %>">Next</a>
+     </li>
+     <li class="page-item <% if (page === totalPages) { %>disabled<% } %>">
+       <a class="page-link" href="/?page=<%= totalPages %>">Last</a>
+     </li>
+   </ul>
+ </nav>
+ 
+ <%- include('../partials/footer') %>
+```
+
+//== views/login/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Login</h3>
+        </div>
+        <div class="card-body">
+          <% if (errors) { %>
+            <% errors.forEach((error) => { %>
+              <div class="alert alert-danger" role="alert">
+                <%= error.msg %>
+              </div>
+            <% }) %>
+          <% } %>
+          <form action="/users/login" method="post">
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required />
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/partials/footer.ejs
+```
+    <!-- Footer -->
+    <footer class="text-center mt-5">
+        <p>&copy; RecipeBook 2023. All rights reserved.</p>
+      </footer>
+      <!-- Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    </body>
+  </html>
+```
+
+//== views/partials/header.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RecipeBook</title>
+    <!-- Bootstrap CSS -->
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <%- include('navbar') %>
+```
+
+//== views/partials/navbar.ejs
+```
+<!-- views/partials/navbar.ejs
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">RecipeBook</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/topics">Topics</a>
+        </li>
+        <% if (user) { %>
+          <% if (!profileUser || (profileUser && profileUser._id.toString() === user._id.toString())) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/recipes/my">My Recipes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/favorites">Favorites</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/recipes/new">Create</a>
+            </li>
+          <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/profile">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/logout">Logout</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/signup">Sign Up</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">RecipeBook</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/topics">Topics</a>
+        </li>
+        <% if (user) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/recipes/my">My Recipes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/favorites">Favorites</a>
+          </li>
+          <% if (!profileUser || (profileUser && profileUser._id.toString() === user._id.toString())) { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/recipes/new">Create</a>
+            </li>
+          <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/profile">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/logout">Logout</a>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/signup">Sign Up</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>
+```
+
+//== views/profile/edit.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h1 class="mb-4">Edit Profile</h1>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form action="/users/profile" method="post">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="avatar" class="form-label">Avatar</label>
+          <input type="text" class="form-control" id="avatar" name="avatar" value="<%= user.avatar %>">
+        </div>
+        <div class="mb-3">
+          <label for="bio" class="form-label">Bio</label>
+          <textarea class="form-control" id="bio" name="bio" rows="4"><%= user.bio %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/profile/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h1 class="mb-4">My Profile</h1>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form action="/users/profile" method="post">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+        </div>
+        <div class="mb-3">
+          <label for="avatar" class="form-label">Avatar</label>
+          <input type="text" class="form-control" id="avatar" name="avatar" value="<%= user.avatar %>">
+        </div>
+        <div class="mb-3">
+          <label for="bio" class="form-label">Bio</label>
+          <textarea class="form-control" id="bio" name="bio" rows="4"><%= user.bio %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/recipes/edit.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Edit Recipe</h3>
+        </div>
+        <div class="card-body">
+          <form action="/recipes/<%= recipe._id %>?_method=PUT" method="post">
+            <input type="hidden" name="_method" value="PUT">
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" name="name" value="<%= recipe.name %>" required />
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea class="form-control" id="description" name="description" rows="3"><%= recipe.description %></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="image" class="form-label">Image URL</label>
+              <input type="text" class="form-control" id="image" name="image" value="<%= recipe.image %>" />
+            </div>
+            <div class="mb-3">
+              <label for="ingredients" class="form-label">Ingredients</label>
+              <textarea class="form-control" id="ingredients" name="ingredients" rows="3" required><%= recipe.ingredients %></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="instructions" class="form-label">Instructions</label>
+              <textarea class="form-control" id="instructions" name="instructions" rows="3" required><%= recipe.instructions %></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="topic" class="form-label">Topic</label>
+              <input type="text" class="form-control" id="topic" name="topic" value="<%= recipe.topic %>" />
+            </div>
+            <div class="mb-3">
+              <label for="category" class="form-label">Category</label>
+              <input type="text" class="form-control" id="category" name="category" value="<%= recipe.category %>" />
+            </div>
+            <div class="mb-3">
+              <label for="difficulty" class="form-label">Difficulty</label>
+              <input type="text" class="form-control" id="difficulty" name="difficulty" value="<%= recipe.difficulty %>" />
+            </div>
+            <div class="mb-3">
+              <label for="time" class="form-label">Time</label>
+              <input type="text" class="form-control" id="time" name="time" value="<%= recipe.time %>" />
+            </div>
+            <button type="submit" class="btn btn-primary">Update Recipe</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/recipes/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% recipes.forEach((recipe) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div style="height: 200px; overflow: hidden;">
+            <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= recipe.name %></h5>
+            <p class="card-text"><%= recipe.description %></p>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+              Read More
+            </button>
+            <% if (user && user.id === recipe.user.id) { %>
+              <a href="/recipes/<%= recipe._id %>/edit" class="btn btn-warning">Edit</a>
+              <form action="/recipes/<%= recipe._id %>?_method=DELETE" method="post" class="d-inline">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <%- include('recipeModal', { recipe: recipe }) %>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/recipes/recipeModal.ejs
+```
+<div class="modal fade" id="recipeModal<%= recipe._id %>" tabindex="-1" aria-labelledby="recipeModalLabel<%= recipe._id %>" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recipeModalLabel<%= recipe._id %>"><%= recipe.name %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+        <h6>Ingredients:</h6>
+        <p><%= recipe.ingredients %></p>
+        <h6>Instructions:</h6>
+        <p><%= recipe.instructions %></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+//== views/recipes/show.ejs
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= recipe.name %></title>
+</head>
+<body>
+    <h1><%= recipe.name %></h1>
+    <h2>Ingredients</h2>
+    <p><%= recipe.ingredients %></p>
+    <h2>Instructions</h2>
+    <p><%= recipe.instructions %></p>
+</body>
+</html>
+```
+
+//== views/signUp/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Sign Up</h3>
+        </div>
+        <div class="card-body">
+          <% if (errors) { %>
+            <% errors.forEach((error) => { %>
+              <div class="alert alert-danger" role="alert">
+                <%= error.msg %>
+              </div>
+            <% }) %>
+          <% } %>
+          <form action="/users/signup" method="post">
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" name="name" required />
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required />
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/topics/index.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% topics.forEach((topic) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title"><%= topic %></h5>
+          </div>
+          <div id="carousel<%= topic %>" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <% recipesByTopic[topic].forEach((recipe, index) => { %>
+                <div class="carousel-item <% if (index === 0) { %>active<% } %>">
+                  <div class="card-body">
+                    <div style="height: 200px; overflow: hidden;">
+                      <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title"><%= recipe.name %></h5>
+                    <p class="card-text">By <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a></p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+                      Read More
+                    </button>
+                  </div>
+                  <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+                </div>
+              <% }) %>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= topic %>" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= topic %>" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
+//== views/users/profile.ejs
+```
+<%- include('../partials/header') %>
+
+<main class="container mt-5">
+  <h1><%= profileUser.name %>'s Profile</h1>
+  <p>Email: <%= profileUser.email %></p>
+  <p>Bio: <%= profileUser.bio %></p>
+
+  <h3><%= profileUser.name %>'s Recipes</h3>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% recipes.forEach((recipe) => { %>
+      <div class="col">
+        <div class="card h-100">
+          <div style="height: 200px; overflow: hidden;">
+            <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+          </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= recipe.name %></h5>
+            <p class="card-text"><%= recipe.description %></p>
+            <% if (locals.user && locals.user.id === recipe.user.id) { %>
+              <a href="/favorites/toggle/<%= recipe._id %>" class="btn btn-outline-danger">
+                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+              </a>
+            <% } else { %>
+              <span class="btn btn-outline-danger disabled">
+                <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+              </span>
+            <% } %>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+              Read More
+            </button>
+          </div>
+        </div>
+      </div>
+      <%- include('../recipes/recipeModal', { recipe: recipe }) %>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+```
+
