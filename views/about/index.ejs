@@ -1,9 +1,52 @@
 <%- include('../partials/header') %>
 
-<main class="container mt-5">
-  <h1 class="mb-4">About RecipeBook</h1>
-  <p>RecipeBook is a social networking website where users can create and share their recipes with other users who love cooking. It provides a platform for food enthusiasts to discover new recipes, connect with other users, and explore various culinary topics.</p>
-  <p>For any inquiries or feedback, please contact us at support@recipebook.com.</p>
+<style>
+  .about-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .about-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .about-image {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .about-text {
+    text-align: justify;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    max-width: 800px;
+  }
+
+  .contact-link {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .contact-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<main class="container mt-5 about-container">
+  <div class="about-header">
+    <h1>About RecipeBook</h1>
+    <img src="/assets/about.jpg" alt="About RecipeBook" class="about-image">
+  </div>
+  <p class="about-text">RecipeBook is a social networking website where users can create and share their recipes with other users who love cooking. It provides a platform for food enthusiasts to discover new recipes, connect with other users, and explore various culinary topics. Our mission is to bring together people from all over the world to share their passion for cooking and to create a vibrant community where everyone can learn, grow, and enjoy the art of cooking.</p>
+  <p class="about-text">We believe that food is not just about sustenance, but also about culture, creativity, and connection. That's why we've built RecipeBook as a space where anyone, from professional chefs to home cooks, can share their favorite recipes and discover new ones from a global community of food lovers. Whether you're looking for a quick weeknight dinner, a showstopping dessert, or a traditional dish from another culture, RecipeBook is your go-to resource for culinary inspiration.</p>
+  <p class="about-text">For any inquiries or feedback, please <a href="mailto:support@recipebook.com" class="contact-link">contact us</a> at support@recipebook.com.</p>
 </main>
 
 <%- include('../partials/footer') %>

@@ -1,37 +1,70 @@
 <%- include('../partials/header') %>
+<style>
+  .signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-<main class="container mt-5">
-  <div class="row">
-    <div class="col-md-6 mx-auto">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Sign Up</h3>
+  .signup-image {
+    display: none;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 1rem;
+  }
+
+  .form-submit-btn {
+    border-radius: 2rem;
+  }
+
+  @media (min-width: 992px) {
+    .signup-container {
+      /* Change flex-direction to row */
+      flex-direction: row;
+    }
+
+    .signup-image {
+      display: block;
+      /* Limit the dimensions of the image */
+      width: 300px;
+      height: auto;
+      margin: 0 1rem;
+    }
+  }
+</style>
+<main class="signup-container">
+  <img src="/assets/Left.jpg" alt="Left image" class="signup-image">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Sign Up</h3>
+    </div>
+    <div class="card-body">
+      <% if (errors) { %>
+        <% errors.forEach((error) => { %>
+          <div class="alert alert-danger" role="alert">
+            <%= error.msg %>
+          </div>
+        <% }) %>
+      <% } %>
+      <form action="/users/signup" method="post">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" name="name" required />
         </div>
-        <div class="card-body">
-          <% if (errors) { %>
-            <% errors.forEach((error) => { %>
-              <div class="alert alert-danger" role="alert">
-                <%= error.msg %>
-              </div>
-            <% }) %>
-          <% } %>
-          <form action="/users/signup" method="post">
-            <div class="mb-3">
-              <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" name="name" required />
-            </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required />
-            </div>
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" required />
-            </div>
-            <button type="submit" class="btn btn-primary">Sign Up</button>
-          </form>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" name="email" required />
         </div>
-      </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required />
+        </div>
+        <button type="submit" class="btn btn-primary form-submit-btn">Sign Up</button>
+      </form>
     </div>
   </div>
 </main>

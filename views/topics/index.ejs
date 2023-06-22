@@ -1,14 +1,31 @@
 <%- include('../partials/header') %>
-
+<style>
+  .profile-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+  .heart-count {
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    margin-right: 0.5rem;
+  }
+  .heart-count i {
+    margin-right: 0.25rem;
+  }
+  .pointer-events-none {
+    pointer-events: none;
+  }
+</style>
 <main class="container mt-5">
   <div class="row row-cols-1 row-cols-md-3 g-4">
-    <% topics.forEach((topic) => { %>
+    <% topics.forEach((topic, topicIndex) => { %>
       <div class="col">
         <div class="card h-100">
           <div class="card-header">
             <h5 class="card-title"><%= topic %></h5>
           </div>
-          <div id="carousel<%= topic %>" class="carousel slide" data-bs-ride="carousel">
+          <div id="carousel<%= topicIndex %>" class="carousel slide" data-bs-ride="carousel" onclick="event.stopPropagation();">
             <div class="carousel-inner">
               <% recipesByTopic[topic].forEach((recipe, index) => { %>
                 <div class="carousel-item <% if (index === 0) { %>active<% } %>">
@@ -16,21 +33,40 @@
                     <div style="height: 200px; overflow: hidden;">
                       <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
                     </div>
-                    <h5 class="card-title"><%= recipe.name %></h5>
-                    <p class="card-text">By <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a></p>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
-                      Read More
-                    </button>
+                    <br/>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="card-title mb-0"><%= recipe.name %></h5>
+                      <div>
+                        <i class="bi bi-person-circle profile-icon"></i>
+                        <a href="/users/profile/<%= recipe.user._id %>"><%= recipe.user.name %></a>
+                      </div>
+                    </div>
+                    <p class="card-text">
+                      <div class="d-flex justify-content-between align-items-center mt-2">
+                        <% if (user) { %>
+                          <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count" onclick="event.stopPropagation();">
+                            <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+                          </a>
+                        <% } else { %>
+                          <span class="heart-count pointer-events-none">
+                            <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+                          </span>
+                        <% } %>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
+                          Read More
+                        </button>
+                      </div>
+                    </p>
                   </div>
                   <%- include('../recipes/recipeModal', { recipe: recipe }) %>
                 </div>
               <% }) %>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= topic %>" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= topicIndex %>" data-bs-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
               <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= topic %>" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= topicIndex %>" data-bs-slide="next">
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
               <span class="visually-hidden">Next</span>
             </button>

@@ -21,7 +21,7 @@ exports.createRecipe = async (req, res) => {
 
     await newRecipe.save();
     req.flash('success_msg', 'Recipe created successfully');
-    res.redirect('/recipes');
+    res.redirect('/recipes/my');
   } catch (err) {
     console.error(err);
     req.flash('error_msg', 'Error creating recipe');

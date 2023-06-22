@@ -1,28 +1,89 @@
 <%- include('../partials/header') %>
 
+<style>
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .form-label {
+    font-weight: bold;
+  }
+
+  .edit-icon {
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+
+  .profile-form-card {
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+  }
+
+  .form-control {
+    border-radius: 1rem;
+  }
+
+  .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  .form-submit-btn {
+    border-radius: 2rem;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  .form-submit-btn:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+  }
+</style>
+
 <main class="container mt-5">
   <h1 class="mb-4">My Profile</h1>
+  <div class="profile-header">
+    <img src="<%= user.avatar %>" alt="<%= user.name %>'s avatar" class="profile-avatar">
+    <div>
+      <h3><%= user.name %></h3>
+      <p>Email: <%= user.email %></p>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-6 offset-md-3">
-      <form action="/users/profile" method="post">
-        <div class="mb-3">
-          <label for="name" class="form-label">Name</label>
-          <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
-        </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
-        </div>
-        <div class="mb-3">
-          <label for="avatar" class="form-label">Avatar</label>
-          <input type="text" class="form-control" id="avatar" name="avatar" value="<%= user.avatar %>">
-        </div>
-        <div class="mb-3">
-          <label for="bio" class="form-label">Bio</label>
-          <textarea class="form-control" id="bio" name="bio" rows="4"><%= user.bio %></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Profile</button>
-      </form>
+      <div class="profile-form-card">
+        <form action="/users/profile" method="post">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name <i class="bi bi-pencil-square edit-icon"></i></label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email <i class="bi bi-pencil-square edit-icon"></i></label>
+            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="avatar" class="form-label">Avatar <i class="bi bi-pencil-square edit-icon"></i></label>
+            <input type="text" class="form-control" id="avatar" name="avatar" value="<%= user.avatar %>">
+          </div>
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio <i class="bi bi-pencil-square edit-icon"></i></label>
+            <textarea class="form-control" id="bio" name="bio" rows="4"><%= user.bio %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary form-submit-btn">Update Profile</button>
+        </form>
+      </div>
     </div>
   </div>
 </main>

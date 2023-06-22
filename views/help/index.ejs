@@ -1,16 +1,99 @@
 <%- include('../partials/header') %>
 
-<main class="container mt-5">
-  <h1 class="mb-4">Help</h1>
-  <h3>Frequently Asked Questions</h3>
-  <h5>Q: How can I create a new recipe?</h5>
-  <p>A: To create a new recipe, go to the "Create" tab and fill in the required information such as name, description, ingredients, and instructions. You can also add an image and specify the topic, category, difficulty, and time.</p>
-  <h5>Q: How can I add a recipe to my favorites?</h5>
-  <p>A: When viewing a recipe, click on the "Add to Favorites" button to add it to your favorites list. You can access your favorites from the "Favorites" tab.</p>
-  <h5>Q: How can I edit my profile information?</h5>
-  <p>A: Go to the "Profile" tab and click on the "Edit Profile" button. You can update your name, email, avatar, and bio.</p>
-  <h5>Q: How can I delete my account?</h5>
-  <p>A: To delete your account, please contact our support team at support@recipebook.com.</p>
+<style>
+  .help-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .accordion {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+  }
+
+  .accordion-item:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  .accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007bff;
+    color: #fff;
+    padding: 1rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+  }
+
+  .accordion-body {
+    display: none;
+    padding: 1rem;
+    border: 1px solid #007bff;
+    border-radius: 0.5rem;
+  }
+
+  .faq-image {
+    width: 300px;
+    margin: 0 1rem;
+    height: auto;
+    object-fit: cover;
+    border-radius: 1rem;
+  }
+
+  @media (min-width: 992px) {
+    .help-container {
+      flex-direction: row;
+      gap: 2rem;
+    }
+  }
+</style>
+
+<main class="container mt-5 help-container">
+  <div>
+    <h3>Frequently Asked Questions</h3>
+    <div class="accordion">
+      <% const faqs = [
+        {
+          question: 'How can I create a new recipe?',
+          answer: 'To create a new recipe, go to the "Create" tab and fill in the required information such as name, description, ingredients, and instructions. You can also add an image and specify the topic, category, difficulty, and time.'
+        },
+        {
+          question: 'How can I add a recipe to my favorites?',
+          answer: 'When viewing a recipe, click on the "Add to Favorites" button to add it to your favorites list. You can access your favorites from the "Favorites" tab.'
+        },
+        {
+          question: 'How can I edit my profile information?',
+          answer: 'Go to the "Profile" tab and click on the "Edit Profile" button. You can update your name, email, avatar, and bio.'
+        },
+        {
+          question: 'How can I delete my account?',
+          answer: 'To delete your account, please contact our support team at support@recipebook.com.'
+        },
+      ] %>
+      <% faqs.forEach((faq, index) => { %>
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(<%= index %>)">
+            <h5><%= faq.question %></h5>
+            <i class="bi bi-chevron-down"></i>
+          </div>
+          <div class="accordion-body" id="accordion-body-<%= index %>">
+            <p><%= faq.answer %></p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+  <img src="/assets/faq.jpg" alt="FAQ image" class="faq-image">
 </main>
+
+<script>
+  function toggleAccordion(index) {
+    const accordionBody = document.getElementById(`accordion-body-${index}`);
+    accordionBody.style.display = accordionBody.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
 
 <%- include('../partials/footer') %>

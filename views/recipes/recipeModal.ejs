@@ -1,3 +1,60 @@
+<style>
+  .modal-content {
+    border-radius: 10px;
+  }
+
+  .modal-header {
+    background-color: #343a40;
+    color: #ffffff;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
+  .modal-title {
+    font-weight: bold;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-body img {
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+
+  .modal-body h6 {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-body p {
+    margin-bottom: 1rem;
+  }
+
+  .modal-footer {
+    border-top: none;
+  }
+
+  .preserve-newlines {
+    white-space: pre-wrap;
+  }
+
+  .modal-dialog {
+    max-width: 800px;
+  }
+
+  .modal-body img {
+    max-height: 300px;
+  }
+
+  .field-title {
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 5px;
+  }
+</style>
+
 <div class="modal fade" id="recipeModal<%= recipe._id %>" tabindex="-1" aria-labelledby="recipeModalLabel<%= recipe._id %>" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -7,10 +64,25 @@
       </div>
       <div class="modal-body">
         <img src="<%= recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
+        <div>
+          <i class="fas fa-utensils field-title"></i><%= recipe.topic %>
+        </div>
+        <div>
+          <i class="fas fa-th-large field-title"></i><%= recipe.category %>
+        </div>
+        <div>
+          <i class="fas fa-star field-title"></i><%= recipe.difficulty %>
+        </div>
+        <div>
+          <i class="fas fa-clock field-title"></i><%= recipe.time %>
+        </div>
+        <br/>
+        <h6>Description:</h6>
+        <p><%= recipe.description %></p>
         <h6>Ingredients:</h6>
-        <p><%= recipe.ingredients %></p>
+        <p class="preserve-newlines"><%= recipe.ingredients %></p>
         <h6>Instructions:</h6>
-        <p><%= recipe.instructions %></p>
+        <p class="preserve-newlines"><%= recipe.instructions %></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

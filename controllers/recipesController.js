@@ -27,13 +27,13 @@ exports.editRecipe = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
     if (recipe.user.toString() !== req.user.id) {
       req.flash('error_msg', 'Not authorized');
-      return res.redirect('/recipes');
+      return res.redirect('/login');
     }
     res.render('recipes/edit', { recipe });
   } catch (err) {
     console.error(err);
     req.flash('error_msg', 'Error loading recipe');
-    res.redirect('/recipes');
+    res.redirect('/recipes/edit');
   }
 };
 
@@ -42,16 +42,16 @@ exports.updateRecipe = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
     if (recipe.user.toString() !== req.user.id) {
       req.flash('error_msg', 'Not authorized');
-      return res.redirect('/recipes');
+      return res.redirect('/login');
     }
     Object.assign(recipe, req.body);
     await recipe.save();
     req.flash('success_msg', 'Recipe updated successfully');
-    res.redirect('/recipes');
+    res.redirect('/recipes/my');
   } catch (err) {
     console.error(err);
     req.flash('error_msg', 'Error updating recipe');
-    res.redirect('/recipes');
+    res.redirect('/recipes/edit');
   }
 };
 
@@ -60,15 +60,15 @@ exports.deleteRecipe = async (req, res) => {
     const recipe = await Recipe.findById(req.params.id);
     if (recipe.user.toString() !== req.user.id) {
       req.flash('error_msg', 'Not authorized');
-      return res.redirect('/recipes');
+      return res.redirect('/recipes/login');
     }
     await Recipe.deleteOne({ _id: req.params.id }); // Update this line
     req.flash('success_msg', 'Recipe deleted successfully');
-    res.redirect('/recipes');
+    res.redirect('/recipes/my');
   } catch (err) {
     console.error(err);
     req.flash('error_msg', 'Error deleting recipe');
-    res.redirect('/recipes');
+    res.redirect('/recipes/my');
   }
 };
 

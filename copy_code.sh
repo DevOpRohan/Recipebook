@@ -7,7 +7,7 @@ output_file="prompt.txt"
 > "$output_file"
 
 # Define the folders to search
-folders=("models" "routes" "controllers" "views")
+folders=("models" "routes" "controllers")
 
 # Loop through each folder
 for folder in "${folders[@]}"; do

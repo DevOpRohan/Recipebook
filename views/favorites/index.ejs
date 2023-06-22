@@ -1,23 +1,61 @@
 <%- include('../partials/header') %>
 
+<style>
+  .favorite-card {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.5rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .favorite-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .favorite-card .card-title {
+    font-weight: bold;
+  }
+
+  .favorite-card .card-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .favorite-card .btn {
+    border-radius: 2rem;
+  }
+
+  .card-description {
+    height: 3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+
 <main class="container mt-5">
   <h2>Your Favorites</h2>
   <div class="row row-cols-1 row-cols-md-3 g-4">
     <% favorites.forEach((favorite) => { %>
       <div class="col">
-        <div class="card h-100">
+        <div class="card h-100 favorite-card">
           <div style="height: 200px; overflow: hidden;">
             <img src="<%= favorite.recipe.image %>" class="card-img-top img-fluid mx-auto" alt="<%= favorite.recipe.name %>" style="height: 100%; width: 100%; object-fit: cover;">
           </div>
           <div class="card-body">
             <h5 class="card-title"><%= favorite.recipe.name %></h5>
-            <p class="card-text"><%= favorite.recipe.description %></p>
-            <a href="/favorites/toggle/<%= favorite.recipe._id %>" class="btn btn-outline-danger">
-              <i class="bi bi-heart-fill"></i> Remove from Favorites
-            </a>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= favorite.recipe._id %>">
-              Read More
-            </button>
+            <p class="card-description"><%= favorite.recipe.description %></p>
+            <div class="card-text">
+              <a href="/favorites/delete_favorite/<%= favorite.recipe._id %>" class="btn btn-outline-danger">
+                <i class="bi bi-heart-fill"></i> Remove from Favorites
+              </a>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= favorite.recipe._id %>">
+                Read More
+              </button>
+            </div>
           </div>
         </div>
       </div>
