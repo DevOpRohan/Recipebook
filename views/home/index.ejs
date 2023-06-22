@@ -68,9 +68,15 @@
             <br/>
             <p class="card-text d-flex justify-content-between align-items-center">
               <% if (user) { %>
-                <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
-                  <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
-                </a>
+                <% if (user && recipe.favorites.some(fav => fav.toString() === user._id.toString())) { %>
+                  <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
+                    <i class="bi bi-heart-fill"></i> <%= recipe.favoritesCount %>
+                  </a>
+                <% } else { %>
+                  <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
+                    <i class="bi bi-heart"></i> <%= recipe.favoritesCount %>
+                  </a>
+                <% } %>
               <% } else { %>
                 <span class="heart-count">
                   <i class="bi bi-heart"></i> <%= recipe.favorites.length %>

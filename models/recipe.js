@@ -45,6 +45,12 @@ const RecipeSchema = new mongoose.Schema({
       ref: 'Favorite',
     },
   ],
+
+  favoritesCount: {
+    type: Number,
+    default: 0,
+  },
+
 });
 
 module.exports = mongoose.model('Recipe', RecipeSchema);

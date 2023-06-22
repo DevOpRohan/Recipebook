@@ -11,6 +11,16 @@ const FavoriteSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Recipe',
   },
+  favoritesCount: {
+    type: Number,
+    default: 0,
+  },
+  favorites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Favorite',
+    },
+  ],
 });
 
 module.exports = mongoose.model('Favorite', FavoriteSchema);
@@ -65,6 +75,12 @@ const RecipeSchema = new mongoose.Schema({
       ref: 'Favorite',
     },
   ],
+
+  favoritesCount: {
+    type: Number,
+    default: 0,
+  },
+
 });
 
 module.exports = mongoose.model('Recipe', RecipeSchema);
@@ -298,8 +314,8 @@ exports.createRecipe = async (req, res) => {
 
 //controllers/favoritesController.js
 ```
-// const Recipe = require('../models/recipe');
-// const Favorite = require('../models/favorite');
+const Recipe = require('../models/recipe');
+const Favorite = require('../models/favorite');
 
 // exports.toggleFavorite = async (req, res) => {
 //   try {
@@ -319,10 +335,7 @@ exports.createRecipe = async (req, res) => {
 //     req.flash('error_msg', 'Error toggling favorite');
 //     res.redirect('/');
 //   }
-// };
-
-const Recipe = require('../models/recipe');
-const Favorite = require('../models/favorite');
+// }
 
 exports.toggleFavorite = async (req, res) => {
   try {
@@ -331,9 +344,11 @@ exports.toggleFavorite = async (req, res) => {
 
     if (favorite) {
       await Favorite.deleteOne({ _id: favorite._id });
+      await Recipe.findByIdAndUpdate(req.params.recipeId, { $inc: { favoritesCount: -1 } });
     } else {
       const newFavorite = new Favorite({ user: req.user.id, recipe: recipe.id });
       await newFavorite.save();
+      await Recipe.findByIdAndUpdate(req.params.recipeId, { $inc: { favoritesCount: 1 } });
     }
 
     res.redirect('/');
@@ -388,17 +403,42 @@ exports.getHelp = (req, res) => {
 ```
 const Recipe = require('../models/recipe');
 
+// exports.getHomePage = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = 6;
+//     const skip = (page - 1) * limit;
+
+//     const recipes = await Recipe.find({})
+//       .sort({ date: -1 })
+//       .skip(skip)
+//       .limit(limit)
+//       .populate('user');
+
+//     const totalRecipes = await Recipe.countDocuments();
+//     const totalPages = Math.ceil(totalRecipes / limit);
+
+//     res.render('home/index', { recipes, page, totalPages });
+//   } catch (err) {
+//     console.error(err);
+//     req.flash('error_msg', 'Error loading home page');
+//     res.redirect('/');
+//   }
+// };
 exports.getHomePage = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 6;
     const skip = (page - 1) * limit;
 
-    const recipes = await Recipe.find({})
+    let recipes = await Recipe.find({})
       .sort({ date: -1 })
       .skip(skip)
       .limit(limit)
-      .populate('user');
+      .populate('user')
+      .populate('favorites');
+
+    recipes = await populateFavoritesWithUser(recipes);
 
     const totalRecipes = await Recipe.countDocuments();
     const totalPages = Math.ceil(totalRecipes / limit);
@@ -409,6 +449,21 @@ exports.getHomePage = async (req, res) => {
     req.flash('error_msg', 'Error loading home page');
     res.redirect('/');
   }
+};
+
+const populateFavoritesWithUser = async (recipes) => {
+  return await Promise.all(
+    recipes.map(async (recipe) => {
+      const populatedFavorites = await Promise.all(
+        recipe.favorites.map(async (favoriteId) => {
+          const favorite = await Favorite.findById(favoriteId).populate('user');
+          return favorite;
+        })
+      );
+      recipe.favorites = populatedFavorites;
+      return recipe;
+    })
+  );
 };
 ```
 
