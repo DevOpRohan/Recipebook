@@ -9,12 +9,13 @@
     display: flex;
     align-items: center;
     margin-right: 0.5rem;
+    z-index: 10;
   }
   .heart-count i {
     margin-right: 0.25rem;
   }
-  .pointer-events-none {
-    pointer-events: none;
+  .button-primary {
+   z-index: 10;
   }
 </style>
 <main class="container mt-5">
@@ -25,7 +26,7 @@
           <div class="card-header">
             <h5 class="card-title"><%= topic %></h5>
           </div>
-          <div id="carousel<%= topicIndex %>" class="carousel slide" data-bs-ride="carousel" onclick="event.stopPropagation();">
+          <div id="carousel<%= topicIndex %>" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
               <% recipesByTopic[topic].forEach((recipe, index) => { %>
                 <div class="carousel-item <% if (index === 0) { %>active<% } %>">
@@ -44,12 +45,13 @@
                     <p class="card-text">
                       <div class="d-flex justify-content-between align-items-center mt-2">
                         <% if (user) { %>
-                          <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count" onclick="event.stopPropagation();">
-                            <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+                          <% const isFavorite = user.favorites.some(favoriteRecipe => favoriteRecipe._id.toString() === recipe._id.toString()) %>
+                          <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
+                            <i class="bi <%= isFavorite ? 'bi-heart-fill' : 'bi-heart' %>"></i> <%= recipe.favoritesCount ? recipe.favoritesCount : 0 %>
                           </a>
                         <% } else { %>
-                          <span class="heart-count pointer-events-none">
-                            <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+                          <span class="heart-count">
+                            <i class="bi bi-heart"></i> <%= recipe.favoritesCount ? recipe.favoritesCount : 0 %>
                           </span>
                         <% } %>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">

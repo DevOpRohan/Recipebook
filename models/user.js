@@ -20,10 +20,10 @@ const UserSchema = new mongoose.Schema({
   bio: {
     type: String,
   },
-  favorites: [
+favorites: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Favorite',
+      ref: 'Recipe',
     },
   ],
 });

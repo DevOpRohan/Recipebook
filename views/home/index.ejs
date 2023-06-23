@@ -45,6 +45,12 @@
     margin-right: 0.25rem;
   }
 
+
+
+.bi-heart-fill {
+  color: red;
+}
+
 </style>
  <main class="container mt-5">
    <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -68,18 +74,16 @@
             <br/>
             <p class="card-text d-flex justify-content-between align-items-center">
               <% if (user) { %>
-                <% if (user && recipe.favorites.some(fav => fav.toString() === user._id.toString())) { %>
-                  <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
-                    <i class="bi bi-heart-fill"></i> <%= recipe.favoritesCount %>
-                  </a>
-                <% } else { %>
-                  <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
-                    <i class="bi bi-heart"></i> <%= recipe.favoritesCount %>
-                  </a>
-                <% } %>
+                <a href="/favorites/toggle/<%= recipe._id %>" class="heart-count">
+                  <% if (recipe.isFavorite) { %>
+                    <i class="bi bi-heart-fill text-danger"></i>
+                  <% } else { %>
+                    <i class="bi bi-heart"></i>
+                  <% } %> <%= recipe.favoritesCount %>
+                </a>
               <% } else { %>
                 <span class="heart-count">
-                  <i class="bi bi-heart"></i> <%= recipe.favorites.length %>
+                  <i class="bi bi-heart"></i> <%= recipe.favoritesCount %>
                 </span>
               <% } %>
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recipeModal<%= recipe._id %>">
