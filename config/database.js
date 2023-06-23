@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/recipebook', {
+    await mongoose.connect('mongodb+srv://Git:289Bh6Wj473HDEA0@recipe-book-db-69fd315b.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=recipe-book-db', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
