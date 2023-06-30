@@ -2,6 +2,9 @@
 
 RecipeBook is a social media platform designed specifically for food enthusiasts. It provides a platform where users can create, share, and explore recipes from other users. The application is built using the MVC architecture and is developed with Node.js, Express, EJS, MongoDB, and Bootstrap.
 
+## Live Webite
+[Link](https://recipebook-8hvha.ondigitalocean.app/)
+
 ## Features
 
 - **User Authentication**: Secure login and signup system.
@@ -17,6 +20,7 @@ RecipeBook is a social media platform designed specifically for food enthusiasts
 - EJS
 - MongoDB
 - Bootstrap
+
 
 ## Getting Started
 
@@ -39,3 +43,9 @@ To get a local copy up and running, follow these simple steps:
    ```
    node app.js
    ```
+
+## Contact
+
+Your Name - [rohanvermadev@gmail.com](mailto:rohanvermadev@gmail.com)
+
+Project Link: [https://github.com/DevOpRohan/Recipebook](https://github.com/DevOpRohan/Recipebook)
